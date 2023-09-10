@@ -1,3 +1,4 @@
+import res from "express/lib/response";
 import mongoose from "mongoose";
 import { Validator } from "mongoose";
 const userSchema = mongoose.Schema({
@@ -40,7 +41,7 @@ const userSchema = mongoose.Schema({
         minLength: [3, 'Street must be at least 3 Characters']
     },
     apartmentNumber: {
-        type: String,
+        type: Number,
         require: [true, 'Apartment Number is required'],
     },
     userNumber: {
@@ -57,12 +58,19 @@ const userSchema = mongoose.Schema({
         require: [true, 'Number of Orders is required'],
         default :0
     }
-
+    
 })
 
 userSchema.pre('save',async function(next){
     const doc = this;
-    
+    try{
+        const maxUser = User.findOne({},{},{sort : {userNumber:-1}});
+        doc.userNumber = maxUser ? maxUser.userNumber+1 :1;
+        next(); 
+    }
+    catch(err){
+        console.log("error in pre saving", err);
+    }
 })
 const User = mongoose.model('User',userSchema)
 

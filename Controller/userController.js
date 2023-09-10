@@ -1,6 +1,11 @@
-import User from "../models/user"
+
 export const register = async (req, res, next) => {
-    const user = await User.create({
-        
+
+    const newUser = await User.create(req.body);
+    res.status(400).json({
+        status: "success",
+        data: {
+            user: newUser
+        }
     })
 }
